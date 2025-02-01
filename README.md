@@ -42,7 +42,7 @@ The server will start on http://localhost:3002 by default.
 yarn dev # or npm run dev
 ```
 
-## Swagger Documentation (WIP)
+## Swagger Documentation
 
 `/api-docs` will show the Swagger documentation for the API.
 
