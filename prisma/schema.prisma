@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                         String    @id @default(uuid())
+  discord_id                 String    @unique
+  is_staked_to_sidan         Boolean?
+  is_drep_delegated_to_sidan Boolean?
+  wallet_address             String?
+  stake_key_lovelace         Float?
+  jwt                        String?
+  created_at                 DateTime? @default(now())
+  updated_at                 DateTime? @updatedAt
+  vote                       Vote[]
+}
+
+model Proposal {
+  id              String    @id @default(uuid())
+  post_id         String    @unique
+  tx_hash         String    @unique
+  cert_index      String?
+  governance_type String?
+  expiration      Int?
+  metadata        String?
+  created_at      DateTime? @default(now())
+  updated_at      DateTime? @updatedAt
+  vote            Vote[]
+}
+
+model Vote {
+  proposal    Proposal  @relation(fields: [proposal_id], references: [id])
+  proposal_id String
+  user        User      @relation(fields: [user_id], references: [id])
+  user_id     String
+  vote        VoteType?
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @updatedAt
+
+  @@id([proposal_id, user_id])
+}
+
+enum VoteType {
+  YES
+  NO
+  ABSTAIN
+}

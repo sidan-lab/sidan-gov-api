@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@controllers": ["src/controllers/"],
+      "@controllers/*": ["src/controllers/*"],
+      "@libs": ["src/libs/"],
+      "@libs/*": ["src/libs/*"],
+      "@models": ["src/models/"],
+      "@models/*": ["src/models/*"],
+      "@services": ["src/services/"],
+      "@services/*": ["src/services/*"],
+      "@middleware": ["src/middleware/"],
+      "@middleware/*": ["src/middleware/*"]
+    },
+    "lib": ["ESNext"],
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
+    "strictNullChecks": true,
+    "allowJs": true,
+    "target": "es2020",
+    "outDir": "./dist/api",
+    // "rootDir": "./",
+    "module": "commonjs",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/*.ts"],
+  "exclude": ["node_modules/**/*", ".vscode/**/*"]
+}
