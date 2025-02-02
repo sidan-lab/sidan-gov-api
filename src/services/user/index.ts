@@ -188,6 +188,12 @@ export const getTokenByDiscordId = async (discordId: string) => {
 };
 
 export const verifyUserByDiscordId = async (discordId: string) => {
+  const isAdmin = await verifyAdminByDiscordId(discordId);
+
+  if (isAdmin) {
+    return true;
+  }
+
   const checkIfStaked = async (rewardAddress: string) => {
     const info = await blockchainProvider.get(`/accounts/${rewardAddress}`);
     const { active, pool_id, drep_id } = info;

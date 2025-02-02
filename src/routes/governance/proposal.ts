@@ -4,6 +4,7 @@ import {
   getProposalByTxHashCertIndexController,
 } from "../../controllers/governance/proposal";
 import { verifyAdminAccess } from "../../middleware/admin";
+
 const proposalRouter = express.Router();
 
 /**
@@ -13,11 +14,6 @@ const proposalRouter = express.Router();
  *     summary: Get proposal by txHash and certIndex
  *     description: Get proposal by txHash and certIndex from the database
  *     parameters:
- *        - name: discord-id
- *          in: header
- *          required: true
- *          description: discord id of the admin
- *          type: string
  *        - in: path
  *          name: txHash
  *          schema:
@@ -40,12 +36,10 @@ const proposalRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-/* (Leon): Disable route for now (Jan 26, 2025), as it is not used externally */
-// proposalRouter.get(
-//   "/:txHash/:certIndex",
-//   verifyAdminAccess,
-//   getProposalByTxHashCertIndexController
-// );
+proposalRouter.get(
+  "/:txHash/:certIndex",
+  getProposalByTxHashCertIndexController
+);
 
 /**
  * @swagger
@@ -76,11 +70,10 @@ const proposalRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-/* (Leon): Disable route for now (Jan 26, 2025), as it is not used externally */
-// proposalRouter.post(
-//   "/:txHash/:certIndex/",
-//   verifyAdminAccess,
-//   createOrUpdateProposalController
-// );
+proposalRouter.post(
+  "/:txHash/:certIndex/",
+  verifyAdminAccess,
+  createOrUpdateProposalController
+);
 
 export default proposalRouter;
