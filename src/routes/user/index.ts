@@ -32,8 +32,7 @@ const userRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-/* (Leon): Disable route for now (Jan 26, 2025), as it is not used externally */
-// userRouter.get("/", verifyAdminAccess, getUsersController);
+userRouter.get("/", verifyAdminAccess, getUsersController);
 
 /**
  * @swagger
@@ -113,5 +112,29 @@ userRouter.post("/signIn", userSignInController);
  *         description: Bad request
  */
 userRouter.post("/verify", verifyUserAccess, verifyUserController);
+
+/**
+ * @swagger
+ * /user/verify:
+ *   get:
+ *     summary: Verify admin by discord id
+ *     description: Verify whether the user is an admin or not
+ *     parameters:
+ *        - name: discord-id
+ *          in: header
+ *          required: true
+ *          description: discord id of the admin
+ *          type: string
+ *     responses:
+ *       200:
+ *         description: Successfully verified user by discord id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/VerifyUserResponse'
+ *       400:
+ *         description: Bad request
+ */
+userRouter.post("/verify-admin", verifyAdminAccess, verifyUserController);
 
 export default userRouter;
