@@ -63,13 +63,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "workspaces": [
-    "backend/*"
-  ],
-  "exports": {
-    ".": "@prisma/client",
-    "./user": "./src/services/user/index.ts",
-    "./proposal": "./src/services/governance/proposal.ts"
   }
 }
