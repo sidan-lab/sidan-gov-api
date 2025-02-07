@@ -1,6 +1,21 @@
-FROM node:20
+# Install and build the yarn package as base
 
-# Working Dir
+FROM node:20 as base
+
+WORKDIR /base
+
+COPY ["package.json", "yarn.lock", "./"]
+
+RUN yarn
+
+COPY . .
+
+RUN yarn build
+
+# Runner stage
+
+FROM node:20 as runner
+
 WORKDIR /usr/src/app
 
 # Copy Package Json
