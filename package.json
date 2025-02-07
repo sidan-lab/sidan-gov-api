@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon --watch --env-file=.env",
     "build:backend": "tsc",
-    "start": "npm run build:backend && node .build/src/index.js",
+    "start": "npm run build:backend && node ./build/server.js",
     "test": "concurrently \"yarn test\"",
     "clean": "rm -rf .turbo && rm -rf dist && rm -rf node_modules && rm -rf .build",
     "db:format": "prisma format",
