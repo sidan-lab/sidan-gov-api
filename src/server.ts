@@ -5,7 +5,7 @@ import proposalRouter from "./routes/governance/proposal";
 import voteRouter from "./routes/governance/vote";
 import userRouter from "./routes/user";
 
-const swaggerSpec = require("../swaggerConfig");
+import swaggerSpec from "../swaggerConfig";
 
 console.log("Setting up routes...");
 

@@ -4,33 +4,28 @@ FROM node:20 as base
 
 WORKDIR /base
 
-COPY ["package.json", "yarn.lock", "./"]
+COPY package.json yarn.lock ./
 
-RUN yarn
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
 RUN yarn build
 
 # Runner stage
-
 FROM node:20 as runner
 
 WORKDIR /usr/src/app
 
-# Copy Package Json
-COPY package.json yarn.lock* ./
+COPY --from=base /base/build/src ./build/src
+COPY --from=base /base/build/swaggerConfig.js ./build
+COPY --from=base /base/package.json ./
+COPY --from=base /base/yarn.lock ./
+COPY --from=base /base/prisma ./prisma
 
-# Install Files
-RUN yarn install
+RUN yarn install --frozen-lockfile --production
+RUN npx prisma generate
 
-# Compile typescript
-RUN yarn add -D typescript
-
-# Copy Source Files
-COPY . .
-
-# Start
 EXPOSE 3000
 
 CMD ["yarn", "start"]
