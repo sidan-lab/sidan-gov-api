@@ -7,3 +7,4 @@ services:
     env_file:
       - .env
     command: ["yarn", "start"]
+    container_name: sidan-gov-api-local-testing
