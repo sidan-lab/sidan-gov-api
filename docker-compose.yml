@@ -8,3 +8,9 @@ services:
       - .env
     command: ["yarn", "start"]
     container_name: sidan-gov-api-local-testing
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
