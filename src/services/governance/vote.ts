@@ -1,9 +1,8 @@
+import { Prisma, Vote } from "@prisma/client";
+import prisma from "../../database";
 import { voteToEnum } from "../../libs/vote";
-import { Prisma, PrismaClient, Vote } from "@prisma/client";
 import { getUserByDiscordId } from "../user";
 import { getProposalIdByPostId } from "./proposal";
-
-const prisma = new PrismaClient();
 
 export const getVotes = async () => {
   let result: Vote[] = [];

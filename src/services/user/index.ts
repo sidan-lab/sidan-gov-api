@@ -1,7 +1,8 @@
 import { BlockfrostProvider } from "@meshsdk/core";
-import { Prisma, PrismaClient, User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { adminAccessList } from "../../data/admins";
+import prisma from "../../database";
 
 const jwtSecret = process.env.JWT_SECRET!;
 
@@ -11,8 +12,6 @@ const sidanPoolId = process.env.NEXT_PUBLIC_SIDAN_POOL_ID!;
 const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID!;
 
 const blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
-
-const prisma = new PrismaClient();
 
 export const getUsers = async () => {
   let result: User[] = [];

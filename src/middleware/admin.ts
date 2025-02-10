@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyAdminByDiscordId } from "../services/user";
 
-export const verifyAdminAccess = async (
+const verifyAdminAccess = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -31,3 +31,5 @@ export const verifyAdminAccess = async (
     });
   }
 };
+
+export default verifyAdminAccess;

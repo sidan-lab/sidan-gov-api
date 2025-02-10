@@ -1,6 +1,5 @@
-import { Prisma, PrismaClient, Proposal } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Prisma, Proposal } from "@prisma/client";
+import prisma from "../../database";
 
 export const getProposals = async () => {
   let result: Proposal[] = [];

@@ -1,4 +1,3 @@
-import { verifyAdminAccess } from "../../middleware/admin";
 import express from "express";
 import {
   getUserByDiscordIdController,
@@ -6,7 +5,8 @@ import {
   userSignInController,
   verifyUserController,
 } from "../../controllers/user";
-import { verifyUserAccess } from "../../middleware/auth";
+import verifyAdminAccess from "../../middleware/admin";
+import verifyUserAccess from "../../middleware/auth";
 
 const userRouter = express.Router();
 
@@ -32,7 +32,7 @@ const userRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-userRouter.get("/", verifyAdminAccess, getUsersController);
+userRouter.use(verifyAdminAccess).get("/", getUsersController);
 
 /**
  * @swagger
@@ -62,7 +62,9 @@ userRouter.get("/", verifyAdminAccess, getUsersController);
  *       400:
  *         description: Bad request
  */
-userRouter.get("/:discordId", verifyAdminAccess, getUserByDiscordIdController);
+userRouter
+  .use(verifyAdminAccess)
+  .get("/:discordId", getUserByDiscordIdController);
 
 /**
  * @swagger
@@ -111,7 +113,7 @@ userRouter.post("/signIn", userSignInController);
  *       400:
  *         description: Bad request
  */
-userRouter.post("/verify", verifyUserAccess, verifyUserController);
+userRouter.use(verifyUserAccess).post("/verify", verifyUserController);
 
 /**
  * @swagger
@@ -135,6 +137,6 @@ userRouter.post("/verify", verifyUserAccess, verifyUserController);
  *       400:
  *         description: Bad request
  */
-userRouter.post("/verify-admin", verifyAdminAccess, verifyUserController);
+userRouter.use(verifyAdminAccess).post("/verify-admin", verifyUserController);
 
 export default userRouter;

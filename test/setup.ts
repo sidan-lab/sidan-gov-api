@@ -1,7 +1,9 @@
-import supertest from "supertest";
+import request from "supertest";
 import server from "../src/server";
 
-beforeAll(() => {});
+beforeAll((done) => {
+  done();
+});
 
 afterAll((done) => {
   server.close();
@@ -9,4 +11,4 @@ afterAll((done) => {
 });
 
 // Export the supertest request function for use in tests
-export const api = supertest(server);
+export const api = request(server);

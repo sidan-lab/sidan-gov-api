@@ -4,6 +4,7 @@ module.exports = {
   testEnvironment: "node",
   testMatch: ["**/*.test.ts", "**/src/*/test.ts"],
   setupFiles: ["<rootDir>/jest.setup.js"], // Add this line
+  setupFilesAfterEnv: ["<rootDir>/test/singleton.ts"],
   transform: {
     "^.+\\.ts$": "ts-jest",
   },

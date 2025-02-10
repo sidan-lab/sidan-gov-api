@@ -1,8 +1,8 @@
 import express from "express";
 import { handleVoteByPostIdController } from "../../controllers/governance/vote";
-import { verifyUserAccess } from "../../middleware/auth";
+import verifyUserAccess from "../../middleware/auth";
 
-const voteRouter = express.Router();
+export const voteRouter = express.Router();
 
 /**
  * @swagger
@@ -38,6 +38,6 @@ const voteRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-voteRouter.post("/:postId", verifyUserAccess, handleVoteByPostIdController);
+voteRouter.use(verifyUserAccess).post("/:postId", handleVoteByPostIdController);
 
 export default voteRouter;
