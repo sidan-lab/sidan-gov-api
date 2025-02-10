@@ -14,14 +14,23 @@ const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID!;
 const blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
 
 export const getUsers = async () => {
-  let result: User[] = [];
+  let result: Partial<User>[] = [];
 
   try {
-    result = await prisma.user.findMany();
+    const users = await prisma.user.findMany();
+
+    if (users) {
+      result = users.map((user) => {
+        const { jwt, ...rest } = user;
+        return rest;
+      });
+    }
   } catch (error) {
     console.log(error);
     throw new Error("Error fetching users.");
   }
+
+  console.log(result);
 
   return result;
 };

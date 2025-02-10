@@ -11,9 +11,15 @@ import verifyUserAccess from "../src/middleware/auth";
 import verifyAdminAccess from "../src/middleware/admin";
 
 describe("GET /user", () => {
-  it("should respond with status 200", async () => {
+  it("should respond with status 200 with empty users", async () => {
     const response = await api.get("/user");
-    prismaMock.user.findMany.mockResolvedValue([
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ users: [] });
+    expect(verifyAdminAccess).toHaveBeenCalled();
+  });
+
+  it("should respond with status 200 with users", async () => {
+    const mockData = [
       {
         id: "1",
         discord_id: "12345",
@@ -22,8 +28,8 @@ describe("GET /user", () => {
         wallet_address: "addr_test",
         jwt: "",
         stake_key_lovelace: 1000,
-        created_at: new Date(),
-        updated_at: new Date(),
+        created_at: new Date("2025-02-17"),
+        updated_at: new Date("2025-02-17"),
       },
       {
         id: "2",
@@ -33,11 +39,24 @@ describe("GET /user", () => {
         wallet_address: "addr_test2",
         jwt: "",
         stake_key_lovelace: 1000,
-        created_at: new Date(),
-        updated_at: new Date(),
+        created_at: new Date("2025-02-17"),
+        updated_at: new Date("2025-02-17"),
       },
-    ]);
+    ];
+    prismaMock.user.findMany.mockResolvedValue(mockData);
+
+    const response = await api.get("/user");
     expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({
+      users: mockData.map((x) => {
+        const { jwt, ...rest } = x;
+        return {
+          ...rest,
+          created_at: x.created_at.toISOString(),
+          updated_at: x.updated_at.toISOString(),
+        };
+      }),
+    });
     expect(verifyAdminAccess).toHaveBeenCalled();
   });
 });
