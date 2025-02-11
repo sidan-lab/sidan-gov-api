@@ -6,32 +6,32 @@ import verifyUserAccess from "../src/middleware/auth";
 jest.mock("../src/middleware/auth", () => jest.fn((req, res, next) => next()));
 
 describe("POST /governance/vote/{postId}", () => {
-  it("should respond with status 200", async () => {
-    const proposal = {
-      id: "1",
-      post_id: "12345",
-      tx_hash: "test_tx_hash",
-      cert_index: "0",
-      governance_type: "info_action",
-      expiration: 200,
-      metadata: "test_metadata",
-      stake_key_lovelace: 1000,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+  const proposal = {
+    id: "1",
+    post_id: "12345",
+    tx_hash: "test_tx_hash",
+    cert_index: "0",
+    governance_type: "info_action",
+    expiration: 200,
+    metadata: "test_metadata",
+    stake_key_lovelace: 1000,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
 
-    const user = {
-      id: "1",
-      discord_id: "12345",
-      is_staked_to_sidan: true,
-      is_drep_delegated_to_sidan: true,
-      wallet_address: "addr_test",
-      jwt: "",
-      stake_key_lovelace: 1000,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+  const user = {
+    id: "1",
+    discord_id: "12345",
+    is_staked_to_sidan: true,
+    is_drep_delegated_to_sidan: true,
+    wallet_address: "addr_test",
+    jwt: "",
+    stake_key_lovelace: 1000,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
 
+  it("should respond with status 200, voting YES", async () => {
     const vote = {
       vote: "YES",
     };
@@ -44,6 +44,70 @@ describe("POST /governance/vote/{postId}", () => {
       .set("discord-id", user.discord_id);
 
     expect(response.status).toBe(200);
+    expect(verifyUserAccess).toHaveBeenCalled();
+  });
+
+  it("should respond with status 200, voting NO", async () => {
+    const vote = {
+      vote: "NO",
+    };
+
+    prismaMock.proposal.findUnique.mockResolvedValue(proposal);
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    const response = await api
+      .post(`/governance/vote/${proposal.post_id}`)
+      .send(vote)
+      .set("discord-id", user.discord_id);
+
+    expect(response.status).toBe(200);
+    expect(verifyUserAccess).toHaveBeenCalled();
+  });
+
+  it("should respond with status 200, voting ABSTAIN", async () => {
+    const vote = {
+      vote: "ABSTAIN",
+    };
+
+    prismaMock.proposal.findUnique.mockResolvedValue(proposal);
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    const response = await api
+      .post(`/governance/vote/${proposal.post_id}`)
+      .send(vote)
+      .set("discord-id", user.discord_id);
+
+    expect(response.status).toBe(200);
+    expect(verifyUserAccess).toHaveBeenCalled();
+  });
+
+  it("should respond with status 500, vote empty", async () => {
+    const vote = {
+      vote: "",
+    };
+
+    prismaMock.proposal.findUnique.mockResolvedValue(proposal);
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    const response = await api
+      .post(`/governance/vote/${proposal.post_id}`)
+      .send(vote)
+      .set("discord-id", user.discord_id);
+
+    expect(response.status).toBe(500);
+    expect(verifyUserAccess).toHaveBeenCalled();
+  });
+
+  it("should respond with status 500, vote not expected", async () => {
+    const vote = {
+      vote: "TEST",
+    };
+
+    prismaMock.proposal.findUnique.mockResolvedValue(proposal);
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    const response = await api
+      .post(`/governance/vote/${proposal.post_id}`)
+      .send(vote)
+      .set("discord-id", user.discord_id);
+
+    expect(response.status).toBe(500);
     expect(verifyUserAccess).toHaveBeenCalled();
   });
 });

@@ -35,23 +35,6 @@ export const getUsers = async () => {
   return result;
 };
 
-export const getUserById = async (id: string) => {
-  let result: User | null = null;
-
-  try {
-    result = await prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    throw new Error("User not exist.");
-  }
-
-  return result;
-};
-
 export const getUserByDiscordId = async (discordId: string) => {
   let result: Partial<User> | null = null;
 
@@ -318,7 +301,6 @@ export const resetUserAccess = async (discordId: string) => {
 
 module.exports = {
   getUsers,
-  getUserById,
   createUser,
   updateUser,
   signIn,
@@ -326,4 +308,5 @@ module.exports = {
   getUserByDiscordId,
   verifyAdminByDiscordId,
   verifyUserByDiscordId,
+  resetUserAccess,
 };

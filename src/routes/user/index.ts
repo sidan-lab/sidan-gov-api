@@ -32,7 +32,7 @@ const userRouter = express.Router();
  *       400:
  *         description: Bad request
  */
-userRouter.use(verifyAdminAccess).get("/", getUsersController);
+userRouter.get("/", verifyAdminAccess, getUsersController);
 
 /**
  * @swagger
@@ -62,9 +62,7 @@ userRouter.use(verifyAdminAccess).get("/", getUsersController);
  *       400:
  *         description: Bad request
  */
-userRouter
-  .use(verifyAdminAccess)
-  .get("/:discordId", getUserByDiscordIdController);
+userRouter.get("/:discordId", verifyAdminAccess, getUserByDiscordIdController);
 
 /**
  * @swagger
@@ -113,7 +111,7 @@ userRouter.post("/signIn", userSignInController);
  *       400:
  *         description: Bad request
  */
-userRouter.use(verifyUserAccess).post("/verify", verifyUserController);
+userRouter.post("/verify", verifyUserAccess, verifyUserController);
 
 /**
  * @swagger
@@ -137,6 +135,6 @@ userRouter.use(verifyUserAccess).post("/verify", verifyUserController);
  *       400:
  *         description: Bad request
  */
-userRouter.use(verifyAdminAccess).post("/verify-admin", verifyUserController);
+userRouter.post("/verify-admin", verifyAdminAccess, verifyUserController);
 
 export default userRouter;

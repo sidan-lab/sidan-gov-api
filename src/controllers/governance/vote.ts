@@ -11,18 +11,7 @@ export const handleVoteByPostIdController = async (
   const { postId } = req.params;
   const requestBody = req.body;
 
-  let discordId = req.headers["discord-id"];
-
-  if (!discordId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-      error: "Unauthorized Access",
-    });
-  }
-
-  if (discordId instanceof Array) {
-    discordId = discordId[0];
-  }
+  let discordId = req.headers["discord-id"] as string;
 
   try {
     await handleVoteByPostId(requestBody, postId, discordId);

@@ -86,15 +86,15 @@ describe("GET /user/{discordId}", () => {
 
 describe("POST /user/signIn", () => {
   it("should respond with status 200", async () => {
-    const mockRequest = {
-      body: {
-        discordId: "12345",
-        username: "test",
-        email: "",
-      },
+    const mockBody = {
+      discord_id: "12345",
+      is_staked_to_sidan: true,
+      is_drep_delegated_to_sidan: true,
+      wallet_address: "addr_test",
+      stake_key_lovelace: 10000000,
     };
 
-    const response = await api.post("/user/signIn");
+    const response = await api.post("/user/signIn").send(mockBody);
     expect(response.status).toBe(200);
   });
 });
