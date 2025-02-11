@@ -1,14 +1,5 @@
 // updateUser dto
-import {
-  IsString,
-  IsNotEmpty,
-  IsEmail,
-  Matches,
-  MinLength,
-  IsEnum,
-  IsOptional,
-  IsBoolean,
-} from "class-validator";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class UpdateUserDto {
   @IsString()
