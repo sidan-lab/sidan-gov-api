@@ -4,19 +4,6 @@ import { voteToEnum } from "../../libs/vote";
 import { getUserByDiscordId } from "../user";
 import { getProposalIdByPostId } from "./proposal";
 
-export const getVotes = async () => {
-  let result: Vote[] = [];
-
-  try {
-    result = await prisma.vote.findMany();
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error fetching votes.");
-  }
-
-  return result;
-};
-
 export const getVotesByPostId = async (postId: string) => {
   let result = {
     yes: 0,
@@ -40,6 +27,8 @@ export const getVotesByPostId = async (postId: string) => {
         vote: true,
       },
     });
+
+    console.log(voteAggregation);
 
     if (voteAggregation) {
       for (const voteGroup of voteAggregation) {

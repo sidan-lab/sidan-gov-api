@@ -2,20 +2,7 @@ import { Request, Response } from "express";
 import {
   createOrUpdateProposal,
   getProposalByTxHashCertIndex,
-  getProposals,
 } from "../../services/governance/proposal";
-
-export const getProposalsController = async (_: Request, res: Response) => {
-  try {
-    const proposals = await getProposals();
-    return res.json({
-      message: "success",
-      proposals,
-    });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
 
 export const getProposalByTxHashCertIndexController = async (
   req: Request,
@@ -30,7 +17,7 @@ export const getProposalByTxHashCertIndexController = async (
       proposal,
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(404).json({ error: error.message });
   }
 };
 
