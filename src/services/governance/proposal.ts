@@ -7,19 +7,15 @@ export const getProposalByTxHashCertIndex = async (
 ) => {
   let result: Proposal | null = null;
 
-  try {
-    const result = await prisma.proposal.findUnique({
-      where: {
-        tx_hash: txHash,
-        cert_index: certIndex,
-      },
-    });
+  const proposal = await prisma.proposal.findUnique({
+    where: {
+      tx_hash: txHash,
+      cert_index: certIndex,
+    },
+  });
 
-    if (!result) {
-      throw new Error("Proposal not exist.");
-    }
-  } catch (error) {
-    throw new Error("Proposal not exist.");
+  if (proposal) {
+    result = proposal;
   }
 
   return result;
