@@ -19,7 +19,6 @@ export const getProposalByTxHashCertIndex = async (
       throw new Error("Proposal not exist.");
     }
   } catch (error) {
-    console.log(error);
     throw new Error("Proposal not exist.");
   }
 
@@ -32,8 +31,6 @@ export const createOrUpdateProposal = async (
   proposal: Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
 ) => {
   let result: Proposal | null = null;
-
-  console.log(proposal);
 
   try {
     if (!proposal || Object.keys(proposal).length === 0) {
@@ -66,7 +63,6 @@ export const createOrUpdateProposal = async (
 
     return result;
   } catch (error) {
-    console.log(error);
     throw new Error("Error creating proposal:", error.message);
   }
 };

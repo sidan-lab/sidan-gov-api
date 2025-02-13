@@ -9,4 +9,11 @@ module.exports = {
     "^.+\\.ts$": "ts-jest",
   },
   transformIgnorePatterns: ["/node_modules/"],
+  collectCoverageFrom: [
+    "src/controllers/**",
+    "src/services/**",
+    "src/routes/**",
+    "src/middleware/**",
+    "!src/libs/**",
+  ],
 };

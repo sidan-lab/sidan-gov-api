@@ -1,36 +1,23 @@
-import { BlockfrostProvider } from "@meshsdk/core";
 import { Prisma, User } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { adminAccessList } from "../../data/admins";
 import prisma from "../../database";
+import { checkIfStaked } from "../../libs/cardano";
+import { jwtVerify } from "../../libs/jwt";
 
 const jwtSecret = process.env.JWT_SECRET!;
-
-const blockfrostApiKey = process.env.BLOCKFROST_KEY!;
-
-const sidanPoolId = process.env.NEXT_PUBLIC_SIDAN_POOL_ID!;
-const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID!;
-
-const blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
 
 export const getUsers = async () => {
   let result: Partial<User>[] = [];
 
-  try {
-    const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany();
 
-    if (users) {
-      result = users.map((user) => {
-        const { jwt, ...rest } = user;
-        return rest;
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error fetching users.");
+  if (users) {
+    result = users.map((user) => {
+      const { jwt, ...rest } = user;
+      return rest;
+    });
   }
-
-  console.log(result);
 
   return result;
 };
@@ -55,7 +42,6 @@ export const getUserByDiscordId = async (discordId: string) => {
 
     return result;
   } catch (error) {
-    console.log(error);
     throw new Error("User not exist.");
   }
 };
@@ -75,20 +61,10 @@ const generateJwtToken = async (discord_id: string) => {
 export const createUser = async (user: Prisma.UserCreateInput) => {
   let result: User | null = null;
 
-  try {
-    const data = Prisma.validator<Prisma.UserCreateInput>()(user);
-
-    if (!data) {
-      throw new Error("Invalid user data.");
-    }
-
-    result = await prisma.user.create({
-      data,
-    });
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error creating user.");
-  }
+  const data = Prisma.validator<Prisma.UserCreateInput>()(user);
+  result = await prisma.user.create({
+    data,
+  });
 
   return result;
 };
@@ -96,34 +72,25 @@ export const createUser = async (user: Prisma.UserCreateInput) => {
 export const updateUser = async (id: string, user: Prisma.UserUpdateInput) => {
   let result: User | null = null;
 
-  try {
-    const data = Prisma.validator<Prisma.UserUpdateInput>()(user);
+  const data = Prisma.validator<Prisma.UserUpdateInput>()(user);
 
-    if (!data) {
-      throw new Error("Invalid user data.");
-    }
-
-    result = await prisma.user.update({
-      where: {
-        id,
-      },
-      data,
-    });
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error updating user.");
-  }
+  result = await prisma.user.update({
+    where: {
+      id,
+    },
+    data,
+  });
 
   return result;
 };
 
 export const signIn = async (user: Prisma.UserCreateInput) => {
   try {
-    const data = Prisma.validator<Prisma.UserCreateInput>()(user);
-
-    if (!data) {
+    if (!user || Object.keys(user).length === 0) {
       throw new Error("Invalid user data.");
     }
+
+    const data = Prisma.validator<Prisma.UserCreateInput>()(user);
 
     const token = await generateJwtToken(data.discord_id);
 
@@ -151,33 +118,6 @@ export const signIn = async (user: Prisma.UserCreateInput) => {
   }
 };
 
-export const getTokenByDiscordId = async (discordId: string) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        discord_id: discordId,
-      },
-    });
-
-    const token = user?.jwt;
-
-    if (!token) {
-      throw new Error("Token not exist.");
-    }
-
-    jwt.verify(token, jwtSecret, async (err) => {
-      if (err) {
-        throw new Error("Token expired");
-      }
-    });
-
-    return token;
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error fetching token.");
-  }
-};
-
 export const verifyUserByDiscordId = async (discordId: string) => {
   const isAdmin = await verifyAdminByDiscordId(discordId);
 
@@ -185,16 +125,6 @@ export const verifyUserByDiscordId = async (discordId: string) => {
     return true;
   }
 
-  const checkIfStaked = async (rewardAddress: string) => {
-    const info = await blockchainProvider.get(`/accounts/${rewardAddress}`);
-    const { active, pool_id, drep_id } = info;
-    return {
-      isRegistered: active,
-      isStaked: pool_id === sidanPoolId,
-      isDRepDelegated: drep_id === sidanDRepId,
-    };
-  };
-
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -202,45 +132,32 @@ export const verifyUserByDiscordId = async (discordId: string) => {
       },
     });
 
-    if (!user) {
-      throw new Error("User not exist.");
-    }
+    if (user) {
+      const token = user.jwt;
 
-    const token = user.jwt;
-
-    if (!token) {
-      throw new Error("User not found");
-    }
-
-    jwt.verify(token, jwtSecret, async (err, payload: jwt.JwtPayload) => {
-      if (err) {
-        throw new Error("Invalid Token");
+      if (!token) {
+        throw new Error("User not found");
       }
 
-      const { reward_address } = payload;
-      if (reward_address) {
-        const info = await checkIfStaked(reward_address);
-        if (!info) {
-          throw new Error("Invalid Token");
-        }
+      const decoded = await jwtVerify(token, jwtSecret);
 
-        const { isRegistered, isStaked, isDRepDelegated } = info;
+      const info = await checkIfStaked(user.wallet_address as string);
 
-        if (!isRegistered || !isStaked || !isDRepDelegated) {
-          throw new Error("Invalid Access");
-        }
+      const { isRegistered, isStaked, isDRepDelegated } = info;
+
+      if (!isRegistered || !isStaked || !isDRepDelegated) {
+        throw new Error("Invalid Access");
       }
-    });
 
-    return true;
+      return true;
+    }
   } catch (error) {
     try {
       await resetUserAccess(discordId as string);
     } catch (error) {
-      console.log("Error resetting user: ", error);
+      console.log("Error resetting user access: ", error);
     }
-    console.log("Error verifying user: ", error);
-    return false;
+    throw new Error("Error verifying user: ", error);
   }
 };
 
@@ -262,41 +179,26 @@ export const verifyAdminByDiscordId = async (discordId: string) => {
 
     return isAdmin;
   } catch (error) {
-    console.log(error);
     throw new Error("Error verifying admin.");
   }
 };
 
 export const resetUserAccess = async (discordId: string) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        discord_id: discordId,
-      },
-    });
+  const user = await prisma.user.update({
+    where: {
+      discord_id: discordId,
+    },
+    data: {
+      is_drep_delegated_to_sidan: false,
+      is_staked_to_sidan: false,
+      jwt: null,
+    },
+  });
 
-    if (!user) {
-      throw new Error("User not exist.");
-    }
-
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        is_drep_delegated_to_sidan: false,
-        is_staked_to_sidan: false,
-        jwt: null,
-      },
-    });
-
-    return {
-      user,
-      message: "User reset successfully.",
-    };
-  } catch (error) {
-    console.log(error);
-  }
+  return {
+    user,
+    message: "User reset successfully.",
+  };
 };
 
 module.exports = {
@@ -304,7 +206,6 @@ module.exports = {
   createUser,
   updateUser,
   signIn,
-  getTokenByDiscordId,
   getUserByDiscordId,
   verifyAdminByDiscordId,
   verifyUserByDiscordId,

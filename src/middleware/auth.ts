@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { resetUserAccess, verifyUserByDiscordId } from "../services/user";
+import { verifyUserByDiscordId } from "../services/user";
 
 const verifyUserAccess = async (
   req: Request,
@@ -20,8 +20,6 @@ const verifyUserAccess = async (
 
     next();
   } catch (error) {
-    console.log(error);
-
     return res.status(401).json({
       message: "Unauthorized",
       error: "Unauthorized Access",

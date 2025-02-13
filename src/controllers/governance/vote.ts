@@ -32,8 +32,6 @@ export const getVotesByPostIdController = async (
 ) => {
   const { postId } = req.params;
 
-  console.log(postId);
-
   try {
     const vote = await getVotesByPostId(postId);
 

@@ -10,6 +10,26 @@ jest.mock("../src/middleware/admin", () => jest.fn((req, res, next) => next()));
 import verifyUserAccess from "../src/middleware/auth";
 import verifyAdminAccess from "../src/middleware/admin";
 
+const mockUser = {
+  id: "1",
+  discord_id: "12345",
+  is_staked_to_sidan: true,
+  is_drep_delegated_to_sidan: true,
+  wallet_address: "addr_test",
+  jwt: "test_jwt",
+  stake_key_lovelace: 1000,
+  created_at: null,
+  updated_at: null,
+};
+
+const mockSignIn = {
+  discord_id: "12345",
+  is_staked_to_sidan: true,
+  is_drep_delegated_to_sidan: true,
+  wallet_address: "addr_test",
+  stake_key_lovelace: 10000000,
+};
+
 describe("GET /user", () => {
   it("should respond with status 200 with empty users", async () => {
     const response = await api.get("/user");
@@ -63,39 +83,45 @@ describe("GET /user", () => {
 
 describe("GET /user/{discordId}", () => {
   it("should respond with status 200", async () => {
-    const user = {
-      id: "1",
-      discord_id: "12345",
-      is_staked_to_sidan: true,
-      is_drep_delegated_to_sidan: true,
-      wallet_address: "addr_test",
-      jwt: "",
-      stake_key_lovelace: 1000,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
+    prismaMock.user.findUnique.mockResolvedValue(mockUser);
 
-    prismaMock.user.findUnique.mockResolvedValue(user);
-
-    const response = await api.get("/user/" + user.discord_id);
+    const response = await api.get("/user/" + mockUser.discord_id);
 
     expect(response.status).toBe(200);
+    expect(verifyAdminAccess).toHaveBeenCalled();
+  });
+
+  it("should respond with status 404, user not exist", async () => {
+    const response = await api.get("/user/" + mockUser.discord_id);
+
+    expect(response.status).toBe(404);
     expect(verifyAdminAccess).toHaveBeenCalled();
   });
 });
 
 describe("POST /user/signIn", () => {
-  it("should respond with status 200", async () => {
-    const mockBody = {
-      discord_id: "12345",
-      is_staked_to_sidan: true,
-      is_drep_delegated_to_sidan: true,
-      wallet_address: "addr_test",
-      stake_key_lovelace: 10000000,
-    };
-
-    const response = await api.post("/user/signIn").send(mockBody);
+  it("should respond with status 200, new user", async () => {
+    const response = await api.post("/user/signIn").send(mockSignIn);
     expect(response.status).toBe(200);
+  });
+
+  it("should respond with status 200, existing user", async () => {
+    prismaMock.user.findUnique.mockResolvedValue(mockUser);
+
+    const response = await api.post("/user/signIn").send(mockSignIn);
+    expect(response.status).toBe(200);
+  });
+
+  it("should respond with status 500, with no request body, new user", async () => {
+    const response = await api.post("/user/signIn");
+    expect(response.status).toBe(500);
+  });
+
+  it("should respond with status 500, with no request body, existing user", async () => {
+    prismaMock.user.findUnique.mockResolvedValue(mockUser);
+
+    const response = await api.post("/user/signIn");
+    expect(response.status).toBe(500);
   });
 });
 

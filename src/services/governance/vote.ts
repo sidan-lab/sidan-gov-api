@@ -28,8 +28,6 @@ export const getVotesByPostId = async (postId: string) => {
       },
     });
 
-    console.log(voteAggregation);
-
     if (voteAggregation) {
       for (const voteGroup of voteAggregation) {
         if (voteGroup.vote === "YES") {
@@ -42,7 +40,6 @@ export const getVotesByPostId = async (postId: string) => {
       }
     }
   } catch (error) {
-    console.log(error);
     throw new Error("Error Getting vote.");
   }
 
@@ -102,7 +99,6 @@ export const handleVoteByPostId = async (
       }
     }
   } catch (error) {
-    console.log(error);
     throw new Error("Error creating vote.");
   }
 
