@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { resetUserAccess, verifyUserByDiscordId } from "../services/user";
+import { verifyUserByDiscordId } from "../services/user";
 
-export const verifyUserAccess = async (
+const verifyUserAccess = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -16,23 +16,15 @@ export const verifyUserAccess = async (
   }
 
   try {
-    const verifyUser = await verifyUserByDiscordId(discordId as string);
-
-    if (!verifyUser) {
-      throw new Error("User not verified");
-    }
+    await verifyUserByDiscordId(discordId as string);
 
     next();
   } catch (error) {
-    console.log(error);
-    try {
-      await resetUserAccess(discordId as string);
-    } catch (error) {
-      console.log("Error resetting user: ", error);
-    }
     return res.status(401).json({
       message: "Unauthorized",
       error: "Unauthorized Access",
     });
   }
 };
+
+export default verifyUserAccess;

@@ -3,10 +3,10 @@ import {
   getVotesByPostIdController,
   handleVoteByPostIdController,
 } from "../../controllers/governance/vote";
-import { verifyUserAccess } from "../../middleware/auth";
-import { verifyAdminAccess } from "../../middleware/admin";
+import verifyUserAccess from "../../middleware/auth";
+import verifyAdminAccess from "../../middleware/admin";
 
-const voteRouter = express.Router();
+export const voteRouter = express.Router();
 
 /**
  * @swagger

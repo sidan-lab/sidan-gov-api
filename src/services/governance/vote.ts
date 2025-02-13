@@ -1,22 +1,8 @@
+import { Prisma, Vote } from "@prisma/client";
+import prisma from "../../database";
 import { voteToEnum } from "../../libs/vote";
-import { Prisma, PrismaClient, Vote } from "@prisma/client";
 import { getUserByDiscordId } from "../user";
 import { getProposalIdByPostId } from "./proposal";
-
-const prisma = new PrismaClient();
-
-export const getVotes = async () => {
-  let result: Vote[] = [];
-
-  try {
-    result = await prisma.vote.findMany();
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error fetching votes.");
-  }
-
-  return result;
-};
 
 export const getVotesByPostId = async (postId: string) => {
   let result = {
@@ -54,7 +40,6 @@ export const getVotesByPostId = async (postId: string) => {
       }
     }
   } catch (error) {
-    console.log(error);
     throw new Error("Error Getting vote.");
   }
 
@@ -114,7 +99,6 @@ export const handleVoteByPostId = async (
       }
     }
   } catch (error) {
-    console.log(error);
     throw new Error("Error creating vote.");
   }
 

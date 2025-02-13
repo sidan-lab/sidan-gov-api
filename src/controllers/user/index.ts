@@ -1,11 +1,6 @@
 import { UpdateUserDto } from "@models/users";
 import { Request, Response } from "express";
-import {
-  getUserByDiscordId,
-  getUsers,
-  signIn,
-  verifyUserByDiscordId,
-} from "../../services/user";
+import { getUserByDiscordId, getUsers, signIn } from "../../services/user";
 
 export const getUsersController = async (_: Request, res: Response) => {
   try {
@@ -17,7 +12,7 @@ export const getUsersController = async (_: Request, res: Response) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(404).json({
       message: "error",
       error: error.message,
     });
@@ -39,7 +34,7 @@ export const getUserByDiscordIdController = async (
       },
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(404).json({
       message: "error",
       error: error.message,
     });
@@ -75,28 +70,6 @@ export const verifyUserController = async (_: Request, res: Response) => {
       message: "success",
       data: {
         verified: true,
-      },
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "error",
-      error: error.message,
-    });
-  }
-};
-
-export const getTokenByDiscordIdController = async (
-  req: Request,
-  res: Response
-) => {
-  const { discordId } = req.params;
-
-  try {
-    const result = await getUserByDiscordId(discordId);
-    return res.json({
-      message: "success",
-      data: {
-        user: result,
       },
     });
   } catch (error) {

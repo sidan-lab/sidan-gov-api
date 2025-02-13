@@ -11,18 +11,7 @@ export const handleVoteByPostIdController = async (
   const { postId } = req.params;
   const requestBody = req.body;
 
-  let discordId = req.headers["discord-id"];
-
-  if (!discordId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-      error: "Unauthorized Access",
-    });
-  }
-
-  if (discordId instanceof Array) {
-    discordId = discordId[0];
-  }
+  let discordId = req.headers["discord-id"] as string;
 
   try {
     await handleVoteByPostId(requestBody, postId, discordId);
@@ -42,20 +31,6 @@ export const getVotesByPostIdController = async (
   res: Response
 ) => {
   const { postId } = req.params;
-  const requestBody = req.body;
-
-  let discordId = req.headers["discord-id"];
-
-  if (!discordId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-      error: "Unauthorized Access",
-    });
-  }
-
-  if (discordId instanceof Array) {
-    discordId = discordId[0];
-  }
 
   try {
     const vote = await getVotesByPostId(postId);
@@ -65,6 +40,6 @@ export const getVotesByPostIdController = async (
       vote,
     });
   } catch (error) {
-    return res.status(500).json({ error: "Error handling votes" });
+    return res.status(404).json({ error: "Error getting votes" });
   }
 };

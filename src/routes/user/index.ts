@@ -1,4 +1,3 @@
-import { verifyAdminAccess } from "../../middleware/admin";
 import express from "express";
 import {
   getUserByDiscordIdController,
@@ -6,7 +5,8 @@ import {
   userSignInController,
   verifyUserController,
 } from "../../controllers/user";
-import { verifyUserAccess } from "../../middleware/auth";
+import verifyAdminAccess from "../../middleware/admin";
+import verifyUserAccess from "../../middleware/auth";
 
 const userRouter = express.Router();
 

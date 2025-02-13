@@ -1,19 +1,5 @@
-import { Prisma, PrismaClient, Proposal } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-export const getProposals = async () => {
-  let result: Proposal[] = [];
-
-  try {
-    result = await prisma.proposal.findMany();
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error fetching proposals.");
-  }
-
-  return result;
-};
+import { Prisma, Proposal } from "@prisma/client";
+import prisma from "../../database";
 
 export const getProposalByTxHashCertIndex = async (
   txHash: string,
@@ -22,14 +8,17 @@ export const getProposalByTxHashCertIndex = async (
   let result: Proposal | null = null;
 
   try {
-    result = await prisma.proposal.findUnique({
+    const result = await prisma.proposal.findUnique({
       where: {
         tx_hash: txHash,
         cert_index: certIndex,
       },
     });
+
+    if (!result) {
+      throw new Error("Proposal not exist.");
+    }
   } catch (error) {
-    console.log(error);
     throw new Error("Proposal not exist.");
   }
 
@@ -39,18 +28,18 @@ export const getProposalByTxHashCertIndex = async (
 export const createOrUpdateProposal = async (
   txHash: string,
   certIndex: string,
-  Proposal: Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
+  proposal: Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
 ) => {
   let result: Proposal | null = null;
 
   try {
+    if (!proposal || Object.keys(proposal).length === 0) {
+      throw new Error("Invalid data for proposal creation.");
+    }
+
     const data = Prisma.validator<
       Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
-    >()(Proposal);
-
-    if (!data) {
-      throw new Error("Invalid proposal data.");
-    }
+    >()(proposal);
 
     const findProposal = await prisma.proposal.findUnique({
       where: {
@@ -74,34 +63,27 @@ export const createOrUpdateProposal = async (
 
     return result;
   } catch (error) {
-    console.log(error);
-    throw new Error("Error creating proposal.");
+    throw new Error("Error creating proposal:", error.message);
   }
 };
 
 export const getProposalIdByPostId = async (postId: string) => {
   let result: string | null = null;
 
-  try {
-    const proposal = await prisma.proposal.findUnique({
-      where: {
-        post_id: postId,
-      },
-    });
+  const proposal = await prisma.proposal.findUnique({
+    where: {
+      post_id: postId,
+    },
+  });
 
-    if (proposal) {
-      result = proposal.id;
-    }
-  } catch (error) {
-    console.log(error);
-    throw new Error("Proposal not exist.");
+  if (proposal) {
+    result = proposal.id;
   }
 
   return result;
 };
 
 module.exports = {
-  getProposals,
   getProposalByTxHashCertIndex,
   getProposalIdByPostId,
   createOrUpdateProposal,
