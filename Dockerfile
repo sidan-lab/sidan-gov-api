@@ -4,7 +4,12 @@ FROM node:20 as base
 
 WORKDIR /base
 
-COPY package.json yarn.lock ./
+COPY package.json ./
+
+# Generate yarn.lock if it does not exist
+RUN if [ ! -f yarn.lock ]; then yarn install; fi
+
+COPY yarn.lock ./
 
 RUN yarn install --frozen-lockfile
 
@@ -26,6 +31,6 @@ COPY --from=base /base/prisma ./prisma
 RUN yarn install --frozen-lockfile --production
 RUN npx prisma generate
 
-EXPOSE 3000
+EXPOSE 3002
 
 CMD ["yarn", "start"]
