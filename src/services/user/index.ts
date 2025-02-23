@@ -3,10 +3,16 @@ import jwt from "jsonwebtoken";
 import { adminAccessList } from "../../data/admins";
 import prisma from "../../database";
 import { checkIfStaked } from "../../libs/cardano";
-import { jwtVerify } from "../../libs/jwt";
 
 const jwtSecret = process.env.JWT_SECRET!;
 
+/**
+ * Get Users
+ *
+ * Get all users in the database
+ *
+ * @return {Array} users - Array of user objects
+ */
 export const getUsers = async () => {
   let result: Partial<User>[] = [];
 
@@ -22,6 +28,14 @@ export const getUsers = async () => {
   return result;
 };
 
+/**
+ * Get User By Discord Id
+ *
+ * Get a user in the database by Discord ID
+ *
+ * @param {String} discordId - Discord ID of the user
+ * @return {Object} user - User object
+ */
 export const getUserByDiscordId = async (discordId: string) => {
   let result: Partial<User> | null = null;
 
@@ -46,6 +60,14 @@ export const getUserByDiscordId = async (discordId: string) => {
   }
 };
 
+/**
+ * Generate JWT Token
+ *
+ * Generates a new JWT token for the user
+ *
+ * @param {String} discord_id - Discord ID of the user
+ * @return {String} token - JWT token
+ */
 const generateJwtToken = async (discord_id: string) => {
   const payload = {
     discord_id,
@@ -58,6 +80,14 @@ const generateJwtToken = async (discord_id: string) => {
   return token;
 };
 
+/**
+ * Create User
+ *
+ * Creates a new user in the database. Used when the user signs in for the first time.
+ *
+ * @param {Object} user - User object
+ * @return {Object} user - User object
+ */
 export const createUser = async (user: Prisma.UserCreateInput) => {
   let result: User | null = null;
 
@@ -69,6 +99,14 @@ export const createUser = async (user: Prisma.UserCreateInput) => {
   return result;
 };
 
+/**
+ * Update User
+ *
+ * Updates the user in the database. Used when the user signs in again.
+ *
+ * @param {Object} user - User object
+ * @return {Object} user - User object
+ */
 export const updateUser = async (id: string, user: Prisma.UserUpdateInput) => {
   let result: User | null = null;
 
@@ -84,6 +122,14 @@ export const updateUser = async (id: string, user: Prisma.UserUpdateInput) => {
   return result;
 };
 
+/**
+ * User Sign In
+ *
+ * Signs in the user by creating a new user or updating the existing user with the jwt token
+ *
+ * @param {Object} user - User object
+ * @return {String} message - Success message
+ */
 export const signIn = async (user: Prisma.UserCreateInput) => {
   try {
     if (!user || Object.keys(user).length === 0) {
@@ -118,6 +164,14 @@ export const signIn = async (user: Prisma.UserCreateInput) => {
   }
 };
 
+/**
+ * Verify User By Discord Id
+ *
+ * Verifies if the user is registered, staked, and DRep delegated by checking the user's wallet address in the blockchain
+ *
+ * @param {String} discordId - Discord ID of the user
+ * @return {Boolean} `true` if user is admin, `false` otherwise
+ */
 export const verifyUserByDiscordId = async (discordId: string) => {
   const isAdmin = await verifyAdminByDiscordId(discordId);
 
@@ -139,8 +193,6 @@ export const verifyUserByDiscordId = async (discordId: string) => {
         throw new Error("User not found");
       }
 
-      const decoded = await jwtVerify(token, jwtSecret);
-
       const info = await checkIfStaked(user.wallet_address as string);
 
       const { isRegistered, isStaked, isDRepDelegated } = info;
@@ -160,6 +212,15 @@ export const verifyUserByDiscordId = async (discordId: string) => {
     throw new Error("Error verifying user: ", error);
   }
 };
+
+/**
+ * Verify Admin By Discord Id
+ *
+ * Verifies if the user is an admin by comparing user's wallet address with the admin access list
+ *
+ * @param {String} discordId - Discord ID of the user
+ * @return {Boolean} isAdmin - true if user is admin, false otherwise
+ */
 
 export const verifyAdminByDiscordId = async (discordId: string) => {
   try {
@@ -182,6 +243,15 @@ export const verifyAdminByDiscordId = async (discordId: string) => {
     throw new Error("Error verifying admin.");
   }
 };
+
+/**
+ * Reset User Access
+ *
+ * Reset user access by setting DRep delegation and staking status to false, and jwt to null. Used when authentication fails.
+ *
+ * @param {String} discordId  - Discord ID of the user
+ * @return {Object} user - User object after reset
+ */
 
 export const resetUserAccess = async (discordId: string) => {
   const user = await prisma.user.update({
