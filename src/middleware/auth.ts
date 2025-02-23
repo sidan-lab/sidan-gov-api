@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyUserByDiscordId } from "../services/user";
 
+/**
+ * Middleware to verify if the user signed in, based on the discord id
+ */
+
 const verifyUserAccess = async (
   req: Request,
   res: Response,
