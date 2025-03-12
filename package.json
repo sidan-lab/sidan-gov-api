@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@meshsdk/core": "1.7.10",
-    "@prisma/client": "^6.1.0",
+    "@prisma/client": "^6.5.0",
     "class-validator": "^0.14.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -38,7 +38,7 @@
     "jest-mock-extended": "^4.0.0-beta1",
     "json-schema-to-ts": "^2.9.2",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^6.1.0",
+    "prisma": "^6.5.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
