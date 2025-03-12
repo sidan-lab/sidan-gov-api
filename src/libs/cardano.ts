@@ -7,6 +7,12 @@ const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID!;
 
 const blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
 
+/**
+ * Check the delegation status of the wallet address, whether it is staked to the pool and delegated to the DRep.
+ *
+ * @param {String} walletAddress - Wallet address
+ * @return {Object} - { isRegistered: `boolean`, isStaked: `boolean`, isDRepDelegated: `boolean` }
+ */
 export const checkIfStaked = async (walletAddress: string) => {
   try {
     const addressInfo = await blockchainProvider.get(

@@ -1,4 +1,3 @@
-import { UpdateUserDto } from "@models/users";
 import { Request, Response } from "express";
 import { getUserByDiscordId, getUsers, signIn } from "../../services/user";
 
@@ -41,10 +40,7 @@ export const getUserByDiscordIdController = async (
   }
 };
 
-export const userSignInController = async (
-  req: Request<UpdateUserDto>,
-  res: Response
-) => {
+export const userSignInController = async (req: Request, res: Response) => {
   const requestBody = req.body;
 
   try {
