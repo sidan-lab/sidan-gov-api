@@ -29,12 +29,13 @@ describe("GET /governance/proposal/{txHash}/{certIndex}", () => {
     expect(response.status).toBe(200);
   });
 
-  it("should respond with status 404, proposal not found", async () => {
+  it("should respond with status 200, proposal not found", async () => {
     const response = await api.get(
       `/governance/proposal/${mockProposal.tx_hash}/${mockProposal.cert_index}`
     );
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
+    expect(response.body.proposal).toEqual(null);
   });
 });
 
