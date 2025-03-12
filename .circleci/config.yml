@@ -33,7 +33,7 @@ jobs:
           name: write GCP service key to file
           command: |
             echo 'export PATH=~$PATH:~/.local/bin' >> $BASH_ENV
-            echo "${GCLOUD_SERVICE_KEY}" > ${HOME}/gcloud-service-key.json
+            echo ${GCP_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
 
       - run:
           name: Setup gcloud
@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Set ENV to bash
           command: |
-            echo "${GCP_SERVICE_KEY}" > ${HOME}/gcloud-service-key.json
+            echo ${GCP_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             if [ "${CIRCLE_BRANCH}" = "main" ]; then
               echo "export env=prod" >> $BASH_ENV     
               echo "export BLOCKFROST_KEY=$BLOCKFROST_KEY_PROD" >> $BASH_ENV
