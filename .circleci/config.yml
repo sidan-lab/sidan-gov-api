@@ -1,0 +1,127 @@
+version: 2.1
+aliases:
+  - &deploy_environment
+    working_directory: ~/repo
+    docker:
+      - image: cimg/gcp:2024.08
+  - &stg_prod_only
+    filters:
+      branches:
+        only:
+          - staging
+          - main
+  - &require_build_and_push
+    requires:
+      - build_and_push
+  - &credentials_context
+    context:
+      - slack_creds
+      - gcp_creds
+
+orbs:
+  slack: circleci/slack@4.12.5
+  docker: circleci/docker@2.0.1
+  kubernetes: circleci/kubernetes@1.3.1
+  helm: circleci/helm@3.0.3
+
+jobs:
+  build_and_push:
+    <<: [*deploy_environment]
+    steps:
+      - checkout
+      - run:
+          name: write GCP service key to file
+          command: |
+            echo 'export PATH=~$PATH:~/.local/bin' >> $BASH_ENV
+            echo "${GCP_SERVICE_KEY}" > ${HOME}/gcloud-service-key.json
+
+      - run:
+          name: Setup gcloud
+          command: |
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project $GCLOUD_PROJECT_ID
+            gcloud auth configure-docker asia-east2-docker.pkg.dev --quiet
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and Push Docker image
+          command: |
+            DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
+            docker build -t $DOCKER_IMAGE .
+            docker push $DOCKER_IMAGE
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
+  deploy:
+    <<: [*deploy_environment]
+    steps:
+      - checkout
+      - run:
+          name: Set ENV to bash
+          command: |
+            echo "${GCP_SERVICE_KEY}" > ${HOME}/gcloud-service-key.json
+            if [ "${CIRCLE_BRANCH}" = "main" ]; then
+              echo "export env=prod" >> $BASH_ENV     
+              echo "export BLOCKFROST_KEY=$BLOCKFROST_KEY_PROD" >> $BASH_ENV
+              echo "export NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID_PROD" >> $BASH_ENV
+              echo "export NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID_PROD" >> $BASH_ENV
+              echo "export NEXT_PUBLIC_SIDAN_DREP_ID_129=$NEXT_PUBLIC_SIDAN_DREP_ID_129_PROD" >> $BASH_ENV
+              echo "export DATABASE_URL=$DATABASE_URL_PROD" >> $BASH_ENV
+            elif [ "${CIRCLE_BRANCH}" = "staging" ]; then
+              echo "export env=staging" >> $BASH_ENV
+              echo "export BLOCKFROST_KEY=$BLOCKFROST_KEY_STAGING" >> $BASH_ENV
+              echo "export NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID_STAGING" >> $BASH_ENV
+              echo "export NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID_STAGING" >> $BASH_ENV
+              echo "export NEXT_PUBLIC_SIDAN_DREP_ID_129=$NEXT_PUBLIC_SIDAN_DREP_ID_129_STAGING" >> $BASH_ENV
+              echo "export DATABASE_URL=$DATABASE_URL_STAGING" >> $BASH_ENV        
+            fi
+            source $BASH_ENV
+            echo "env is $env"
+      - run:
+          name: Setup gcloud
+          command: |
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project $GCLOUD_PROJECT_ID
+            gcloud auth configure-docker asia-east2-docker.pkg.dev --quiet
+            gcloud container clusters get-credentials sidan-onchain-governance-${env} --region asia-east2 --project $GCLOUD_PROJECT_ID
+      - run:
+          name: Apply helm chart
+          command: |
+            export DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/backend/$CIRCLE_PROJECT_REPONAME"
+            helm upgrade $CIRCLE_PROJECT_REPONAME ./chart --install --namespace $CIRCLE_PROJECT_REPONAME --create-namespace \
+            --values ./chart/values.${env}.yaml \
+            --set image.repository=$DOCKER_IMAGE \
+            --set image.tag=$CIRCLE_SHA1 \
+            --set env.secret.BLOCKFROST_KEY=$BLOCKFROST_KEY \
+            --set env.secret.NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID \
+            --set env.secret.NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID \
+            --set env.secret.NEXT_PUBLIC_SIDAN_DREP_ID_129=$NEXT_PUBLIC_SIDAN_DREP_ID_129 \
+            --set env.secret.DATABASE_URL=$DATABASE_URL
+      - kubernetes/install-kubectl
+      - run:
+          name: Add iam policy binding
+          command: |
+            gcloud iam service-accounts add-iam-policy-binding \
+              --role="roles/iam.workloadIdentityUser" \
+              --member="serviceAccount:sidan-445102.svc.id.goog[$CIRCLE_PROJECT_REPONAME/ksa-cloud-sql]" \
+              gke-quickstart-service-account@sidan-445102.iam.gserviceaccount.com
+            kubectl annotate serviceaccount \
+              ksa-cloud-sql  \
+              --namespace $CIRCLE_PROJECT_REPONAME \
+              iam.gke.io/gcp-service-account=gke-quickstart-service-account@sidan-445102.iam.gserviceaccount.com
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_and_push:
+          <<: [*credentials_context, *stg_prod_only]
+      - deploy:
+          <<: [*credentials_context, *stg_prod_only, *require_build_and_push]
