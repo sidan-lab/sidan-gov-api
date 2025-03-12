@@ -66,6 +66,19 @@ const options = {
             },
           },
         },
+        VerifyUserResponse: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              description: "Message",
+            },
+            verified: {
+              type: "boolean",
+              description: "Whether the user is verified",
+            },
+          },
+        },
         SingleProposal: {
           type: "object",
           properties: {

@@ -92,7 +92,7 @@ userRouter.post("/signIn", userSignInController);
 /**
  * @swagger
  * /user/verify:
- *   get:
+ *   post:
  *     summary: Verify user by discord id
  *     description: Create a new jwt token for user. Update user if exist or create a new user if not exist
  *     parameters:
@@ -115,8 +115,8 @@ userRouter.post("/verify", verifyUserAccess, verifyUserController);
 
 /**
  * @swagger
- * /user/verify:
- *   get:
+ * /user/verify-admin:
+ *   post:
  *     summary: Verify admin by discord id
  *     description: Verify whether the user is an admin or not
  *     parameters:

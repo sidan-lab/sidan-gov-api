@@ -27,11 +27,13 @@ export const voteRouter = express.Router();
  *        type: string
  *     responses:
  *        200:
- *        description: Successfully retrieved vote result for proposal
- *        content:
- *          application/json:
+ *          description: Successfully retrieved vote result for proposal
+ *          content:
+ *            application/json:
  *              schema:
  *                  $ref: '#/components/schemas/VoteCount'
+ *        400:
+ *          description: Bad request
  */
 voteRouter.get("/:postId", verifyAdminAccess, getVotesByPostIdController);
 

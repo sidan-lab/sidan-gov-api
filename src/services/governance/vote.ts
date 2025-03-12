@@ -4,6 +4,14 @@ import { voteToEnum } from "../../libs/vote";
 import { getUserByDiscordId } from "../user";
 import { getProposalIdByPostId } from "./proposal";
 
+/**
+ * Get Votes By Post Id
+ *
+ * Get vote count in the database of a proposal by post id.
+ *
+ * @param {String} postId - Post id of the proposal
+ * @return {Object} result - Object containing votes count as in `{yes: Number, no: Number, abstain: Number}`
+ */
 export const getVotesByPostId = async (postId: string) => {
   let result = {
     yes: 0,
@@ -46,6 +54,16 @@ export const getVotesByPostId = async (postId: string) => {
   return result;
 };
 
+/**
+ * Handle Vote By Post Id
+ *
+ * Create or update a vote in the database by post id.
+ *
+ * @param {Object} voteData - Vote data object
+ * @param {String} postId - Post id of the proposal
+ * @param {String} discordId - Discord ID of the user
+ * @return {Object} result - Vote object
+ */
 export const handleVoteByPostId = async (
   voteData: Prisma.VoteCreateInput,
   postId: string,
