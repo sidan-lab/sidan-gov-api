@@ -33,7 +33,7 @@ jobs:
           name: write GCP service key to file
           command: |
             echo 'export PATH=~$PATH:~/.local/bin' >> $BASH_ENV
-            echo "${GCP_SERVICE_KEY}" > ${HOME}/gcloud-service-key.json
+            echo "${GCLOUD_SERVICE_KEY}" > ${HOME}/gcloud-service-key.json
 
       - run:
           name: Setup gcloud

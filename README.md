@@ -21,7 +21,7 @@ Create a `.env` file in the workspace repository and set the environment variabl
 For database schema changes & migrations, port 5432 should be used for the database connection.
 
 ```
-DATABASE_URL=postgresql://postgres:password@the.postgres.ip.address:5432
+"postgresql://postgres:<database_password>@/sidan-gov?host=/cloudsql/gcp_project_id>:<region>>:<database_instance_name>"
 ```
 
 For database connection & operation, port 6543 should be used.
