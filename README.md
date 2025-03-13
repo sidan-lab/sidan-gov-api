@@ -10,7 +10,6 @@ This is the backend API, used to interact with the Discord Bot for SIDAN Lab Gov
 yarn # or npm install
 ```
 
-
 ## Pre-requisites
 
 1. (For database) Download and set up local PostgreSQL database, or use a cloud-based database service, like (Supabase)[https://supabase.com/].

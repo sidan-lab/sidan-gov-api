@@ -9,11 +9,11 @@ const verifyAdminAccess = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   const discordId = req.headers["discord-id"];
 
   if (!discordId) {
-    return res.status(401).json({
+    res.status(401).json({
       message: "Unauthorized",
       error: "Unauthorized Access",
     });
@@ -28,7 +28,7 @@ const verifyAdminAccess = async (
 
     next();
   } catch (error) {
-    return res.status(401).json({
+    res.status(401).json({
       message: "Unauthorized",
       error: "Unauthorized Access",
     });

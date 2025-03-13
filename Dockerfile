@@ -4,6 +4,8 @@ FROM node:20 as base
 
 WORKDIR /base
 
+COPY prisma ./
+
 COPY package.json ./
 
 # Generate yarn.lock if it does not exist
