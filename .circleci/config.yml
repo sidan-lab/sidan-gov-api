@@ -88,7 +88,7 @@ jobs:
       - run:
           name: Apply helm chart
           command: |
-            export DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/backend/$CIRCLE_PROJECT_REPONAME"
+            export DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME"
             helm upgrade $CIRCLE_PROJECT_REPONAME ./chart --install --namespace $CIRCLE_PROJECT_REPONAME --create-namespace \
             --values ./chart/values.${env}.yaml \
             --set image.repository=$DOCKER_IMAGE \
