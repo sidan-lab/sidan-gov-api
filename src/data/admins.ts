@@ -9,6 +9,6 @@ export const adminAccessList: AdminUser[] = [
   },
   {
     wallet_address:
-      "addr_test1qpz5yhrgsk9r2xwsmyzlhzhqzvnqs6nakjrzl6lkfj8sdzh9uy9u4llutvvcmnezsrptjdln7l0lwyryj8mg6gawupjqs8h5kx",
+      "addr_test1qztdn7qwa2nv2mnre2leyk3xz0cnhag3q2ktth6ektvnqrylyvks5wjuknwd5r9pfa204s8ynqnxxf88wsx3nc5k8xvsm568tf",
   },
 ];
