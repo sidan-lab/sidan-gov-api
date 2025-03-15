@@ -25,9 +25,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 // Start the server
 const port = parseInt(process.env.PORT || "3002");
 const server = app.listen(port, () => {
-  console.log(
-    `Server is running on https//api-staging-oc-gov.sidan.io:${port}`
-  );
+  console.log(`Server is running on port ${port}`);
 });
 
 export default server;
