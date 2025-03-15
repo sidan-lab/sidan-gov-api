@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 service:
-  port: 8080
+  port: 3002
   type: LoadBalancer
 
 image:
