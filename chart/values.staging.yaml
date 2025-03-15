@@ -47,6 +47,8 @@ env:
     DNEXT_PUBLIC_SIDAN_DREP_ID: data_from_circleci
     NEXT_PUBLIC_SIDAN_DREP_ID_129: data_from_circleci
     DATABASE_URL: data_from_circleci
+    JWT_SECRET: data_from_circleci
+    PORT: data_from_circleci
   normal:
 
 cloudsqlproxy:
