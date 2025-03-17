@@ -34,7 +34,7 @@ ingress:
   tls:
     - hosts:
         - api-staging-oc-gov.sidan.io
-      secretName: sidan-gov-api-tls
+      secretName: sidangovapi-tls
   hosts:
     - host: api-staging-oc-gov.sidan.io
       paths:
