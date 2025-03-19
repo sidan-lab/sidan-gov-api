@@ -56,7 +56,7 @@ export const getUserByDiscordId = async (discordId: string) => {
 
     return result;
   } catch (error) {
-    throw new Error("User not exist.");
+    throw new Error("User not exist: ", error.message);
   }
 };
 
@@ -160,7 +160,7 @@ export const signIn = async (user: Prisma.UserCreateInput) => {
 
     return "User signed in successfully.";
   } catch (error) {
-    throw new Error("Error creating user:" + error);
+    throw new Error("Error creating user: ", error.message);
   }
 };
 
@@ -209,7 +209,7 @@ export const verifyUserByDiscordId = async (discordId: string) => {
     } catch (error) {
       console.log("Error resetting user access: ", error);
     }
-    throw new Error("Error verifying user: ", error);
+    throw new Error("Error verifying user: ", error.message);
   }
 };
 
@@ -240,7 +240,7 @@ export const verifyAdminByDiscordId = async (discordId: string) => {
 
     return isAdmin;
   } catch (error) {
-    throw new Error("Error verifying admin.");
+    throw new Error("Error verifying admin: ", error.message);
   }
 };
 
