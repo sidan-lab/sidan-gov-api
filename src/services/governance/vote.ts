@@ -49,7 +49,7 @@ export const getVotesByPostId = async (postId: string) => {
     }
   } catch (error) {
     console.log("Error Getting vote: ", error.message);
-    throw new Error("Error Getting vote: ", error.message);
+    throw new Error("Error Getting vote");
   }
 
   return result;
@@ -119,7 +119,7 @@ export const handleVoteByPostId = async (
     }
   } catch (error) {
     console.log("Error creating vote: ", error.message);
-    throw new Error("Error creating vote: ", error.message);
+    throw new Error("Error creating vote");
   }
 
   return result;
