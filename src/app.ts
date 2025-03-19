@@ -8,6 +8,7 @@ dotenv.config({
 });
 
 console.log("Starting application...");
+console.log("DATABASE_URL: ", process.env.DATABASE_URL);
 
 const app = express();
 app.use(express.json());
