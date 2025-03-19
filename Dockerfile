@@ -26,9 +26,6 @@ FROM node:20 as runner
 
 WORKDIR /usr/src/app
 
-# Install PostgreSQL client
-RUN apt-get install -y postgresql-client
-
 COPY --from=base /base/build/src ./build/src
 COPY --from=base /base/build/swaggerConfig.js ./build
 COPY --from=base /base/package.json ./
