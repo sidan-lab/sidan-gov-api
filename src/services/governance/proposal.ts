@@ -79,6 +79,7 @@ export const createOrUpdateProposal = async (
 
     return result;
   } catch (error) {
+    console.log("Error creating proposal:", error.message);
     throw new Error("Error creating proposal:", error.message);
   }
 };

@@ -37,6 +37,7 @@ export const checkIfStaked = async (walletAddress: string) => {
       isDRepDelegated: drep_id === sidanDRepId,
     };
   } catch (error) {
-    throw new Error("Error validating address stake status:", error.message);
+    console.log("Error validating address stake status: ", error.message);
+    throw new Error("Error validating address stake status: ", error.message);
   }
 };
