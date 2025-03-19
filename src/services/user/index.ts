@@ -160,7 +160,7 @@ export const signIn = async (user: Prisma.UserCreateInput) => {
 
     return "User signed in successfully.";
   } catch (error) {
-    throw new Error("Error creating user.");
+    throw new Error("Error creating user:" + error);
   }
 };
 
