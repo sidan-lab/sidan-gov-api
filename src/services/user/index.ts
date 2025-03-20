@@ -175,12 +175,9 @@ export const signIn = async (user: Prisma.UserCreateInput) => {
  * @return {Boolean} `true` if user is admin, `false` otherwise
  */
 export const verifyUserByDiscordId = async (discordId: string) => {
-  console.log(`Verifying user with discord-id: ${discordId}`);
-
   const isAdmin = await verifyAdminByDiscordId(discordId);
 
   if (isAdmin) {
-    console.log("User is admin");
     return true;
   }
 
@@ -192,8 +189,6 @@ export const verifyUserByDiscordId = async (discordId: string) => {
     });
 
     if (user) {
-      console.log("User found:", user);
-
       const token = user.jwt;
 
       if (!token) {
@@ -201,7 +196,6 @@ export const verifyUserByDiscordId = async (discordId: string) => {
       }
 
       const info = await checkIfStaked(user.wallet_address as string);
-      console.log("Blockchain info:", info);
 
       const { isRegistered, isStaked, isDRepDelegated } = info;
 
@@ -210,8 +204,6 @@ export const verifyUserByDiscordId = async (discordId: string) => {
       }
 
       return true;
-    } else {
-      throw new Error("User not found");
     }
   } catch (error) {
     try {
