@@ -178,6 +178,7 @@ export const verifyUserByDiscordId = async (discordId: string) => {
   const isAdmin = await verifyAdminByDiscordId(discordId);
 
   if (isAdmin) {
+    console.log("User is admin");
     return true;
   }
 
@@ -189,13 +190,15 @@ export const verifyUserByDiscordId = async (discordId: string) => {
     });
 
     if (user) {
+      console.log("User found:", user);
       const token = user.jwt;
 
       if (!token) {
-        throw new Error("User not found");
+        throw new Error("User JWT not found");
       }
 
       const info = await checkIfStaked(user.wallet_address as string);
+      console.log("Blockchain info:", info);
 
       const { isRegistered, isStaked, isDRepDelegated } = info;
 
@@ -204,6 +207,8 @@ export const verifyUserByDiscordId = async (discordId: string) => {
       }
 
       return true;
+    } else {
+      throw new Error("User not found");
     }
   } catch (error) {
     try {
