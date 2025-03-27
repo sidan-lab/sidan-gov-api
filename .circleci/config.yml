@@ -62,8 +62,8 @@ jobs:
           command: |
             echo ${GCP_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             if [ "${CIRCLE_BRANCH}" = "main" ]; then
-              echo "export env=prod" >> $BASH_ENV     
-              echo "export BLOCKFROST_KEY=$BLOCKFROST_KEY_PROD" >> $BASH_ENV
+              echo "export env=prod" >> $BASH_ENV
+              echo "export BLOCKFROST_KEY_SECRET_RESOURCE_NAME=$BLOCKFROST_KEY_SECRET_RESOURCE_NAME_PROD" >> $BASH_ENV   
               echo "export NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID_PROD" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID_PROD" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_DREP_ID_129=$NEXT_PUBLIC_SIDAN_DREP_ID_129_PROD" >> $BASH_ENV
@@ -72,7 +72,7 @@ jobs:
               echo "export PORT=$PORT_PROD" >> $BASH_ENV
             elif [ "${CIRCLE_BRANCH}" = "staging" ]; then
               echo "export env=staging" >> $BASH_ENV
-              echo "export BLOCKFROST_KEY=$BLOCKFROST_KEY_STAGING" >> $BASH_ENV
+              echo "export BLOCKFROST_KEY_SECRET_RESOURCE_NAME=$BLOCKFROST_KEY_SECRET_RESOURCE_NAME_STAGING" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID_STAGING" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID_STAGING" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_DREP_ID_129=$NEXT_PUBLIC_SIDAN_DREP_ID_129_STAGING" >> $BASH_ENV
@@ -94,13 +94,13 @@ jobs:
           command: |
             export DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME"
             echo "CIRCLE_PROJECT_REPONAME is $CIRCLE_PROJECT_REPONAME"
-            echo "Listing files in chart directory"
+            echo "Listing files in current directory"
             ls -al
             helm upgrade $CIRCLE_PROJECT_REPONAME ./chart --install --namespace $CIRCLE_PROJECT_REPONAME --create-namespace \
             --values ./chart/values.${env}.yaml \
             --set image.repository=$DOCKER_IMAGE \
             --set image.tag=$CIRCLE_SHA1 \
-            --set env.secret.BLOCKFROST_KEY=$BLOCKFROST_KEY \
+            --set env.secret.BLOCKFROST_KEY_SECRET_RESOURCE_NAME=$BLOCKFROST_KEY_SECRET_RESOURCE_NAME \
             --set env.secret.NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID \
             --set env.secret.NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID \
             --set env.secret.NEXT_PUBLIC_SIDAN_DREP_ID_129=$NEXT_PUBLIC_SIDAN_DREP_ID_129 \
