@@ -29,6 +29,7 @@
     "schema": "./prisma/schema.prisma"
   },
   "dependencies": {
+    "@google-cloud/secret-manager": "^6.0.1",
     "@meshsdk/core": "1.7.10",
     "@prisma/client": "^6.5.0",
     "class-validator": "^0.14.0",

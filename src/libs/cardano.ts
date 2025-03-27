@@ -1,11 +1,58 @@
 import { BlockfrostProvider, serializeRewardAddress } from "@meshsdk/core";
+import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 
-const blockfrostApiKey = process.env.BLOCKFROST_KEY!;
-
+const blockfrostKeyResourceName =
+  process.env.BLOCKFROST_KEY_SECRET_RESOURCE_NAME!;
 const sidanPoolId = process.env.NEXT_PUBLIC_SIDAN_POOL_ID!;
 const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID!;
 
-const blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
+if (!blockfrostKeyResourceName) {
+  throw new Error(
+    "Environment variable BLOCKFROST_KEY_SECRET_RESOURCE_NAME is not set"
+  );
+}
+
+/**
+ * Fetch the secret value from GCP Secret Manager.
+ *
+ * @return {Promise<string>} The secret value.
+ */
+
+// Instantiates a client
+const secretmanagerClient = new SecretManagerServiceClient();
+
+async function callAccessSecretVersion() {
+  try {
+    // Access the secret
+    const [accessResponse] = await secretmanagerClient.accessSecretVersion({
+      name: blockfrostKeyResourceName,
+    });
+
+    // Extract the secret payload
+    const payload = accessResponse.payload?.data?.toString();
+    if (!payload) {
+      throw new Error("Secret payload is empty");
+    }
+
+    return payload;
+  } catch (error) {
+    console.error("Error accessing secret:", error.message);
+    throw new Error(
+      `Failed to fetch secret (${blockfrostKeyResourceName}) from GCP Secret Manager: ${error.message}`
+    );
+  }
+}
+
+// Fetch the Blockfrost API key and initialize the blockchain provider
+let blockchainProvider: BlockfrostProvider | null = null;
+
+async function getBlockchainProvider(): Promise<BlockfrostProvider> {
+  if (!blockchainProvider) {
+    const blockfrostApiKey = await callAccessSecretVersion();
+    blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
+  }
+  return blockchainProvider;
+}
 
 /**
  * Check the delegation status of the wallet address, whether it is staked to the pool and delegated to the DRep.
@@ -15,6 +62,7 @@ const blockchainProvider = new BlockfrostProvider(blockfrostApiKey);
  */
 export const checkIfStaked = async (walletAddress: string) => {
   try {
+    const blockchainProvider = await getBlockchainProvider();
     const addressInfo = await blockchainProvider.get(
       `/addresses/${walletAddress}`
     );

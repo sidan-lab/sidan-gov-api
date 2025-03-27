@@ -42,7 +42,7 @@ ingress:
 
 env:
   secret:
-    BLOCKFROST_KEY: data_from_circleci
+    BLOCKFROST_KEY_SECRET_RESOURCE_NAME: data_from_circleci
     NEXT_PUBLIC_SIDAN_POOL_ID: data_from_circleci
     DNEXT_PUBLIC_SIDAN_DREP_ID: data_from_circleci
     NEXT_PUBLIC_SIDAN_DREP_ID_129: data_from_circleci
