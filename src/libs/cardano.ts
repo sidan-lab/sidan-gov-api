@@ -33,7 +33,7 @@ async function callAccessSecretVersion() {
     if (!payload) {
       throw new Error("Secret payload is empty");
     }
-
+    console.log("BLOCKFROST_KEY:", payload);
     return payload;
   } catch (error) {
     console.error("Error accessing secret:", error.message);
