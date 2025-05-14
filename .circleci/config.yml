@@ -70,7 +70,7 @@ jobs:
               echo "export DATABASE_URL=$DATABASE_URL_PROD" >> $BASH_ENV
               echo "export JWT_SECRET=$JWT_SECRET_PROD" >> $BASH_ENV
               echo "export PORT=$PORT_PROD" >> $BASH_ENV
-              echo "export ADMIN_WALLET_ADDRESSES=$ADMIN_WALLET_ADDRESSES_PROD" >> $BASH_ENV
+              echo "export ADMIN_WALLET_ADDRESSES='$ADMIN_WALLET_ADDRESSES_PROD'" >> $BASH_ENV
             elif [ "${CIRCLE_BRANCH}" = "staging" ]; then
               echo "export env=staging" >> $BASH_ENV
               echo "export BLOCKFROST_KEY_SECRET_RESOURCE_NAME=$BLOCKFROST_KEY_SECRET_RESOURCE_NAME_STAGING" >> $BASH_ENV
@@ -80,7 +80,7 @@ jobs:
               echo "export DATABASE_URL=$DATABASE_URL_STAGING" >> $BASH_ENV
               echo "export JWT_SECRET=$JWT_SECRET_STAGING" >> $BASH_ENV
               echo "export PORT=$PORT_STAGING" >> $BASH_ENV
-              echo "export ADMIN_WALLET_ADDRESSES=$ADMIN_WALLET_ADDRESSES_STAGING" >> $BASH_ENV        
+              echo "export ADMIN_WALLET_ADDRESSES='$ADMIN_WALLET_ADDRESSES_STAGING'" >> $BASH_ENV        
             fi
             source $BASH_ENV
             echo "env is $env"
@@ -106,7 +106,7 @@ jobs:
             --set env.secret.DATABASE_URL=$DATABASE_URL \
             --set env.secret.JWT_SECRET=$JWT_SECRET \
             --set env.secret.PORT=$PORT \
-            --set env.secret.ADMIN_WALLET_ADDRESSES=$ADMIN_WALLET_ADDRESSES
+            --set env.secret.ADMIN_WALLET_ADDRESSES="$ADMIN_WALLET_ADDRESSES"
       - kubernetes/install-kubectl
       - run:
           name: Add iam policy binding

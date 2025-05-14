@@ -8,8 +8,8 @@ export const adminAccessList: AdminUser[] = [];
 // Parse the comma-separated list of wallet addresses
 const adminWallets = process.env.ADMIN_WALLET_ADDRESSES;
 if (adminWallets) {
-  const walletAddresses = adminWallets.split(",");
-
+  const walletAddresses = adminWallets.split(";");
+  
   walletAddresses.forEach((address) => {
     if (address.trim()) {
       adminAccessList.push({
