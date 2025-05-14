@@ -4,7 +4,7 @@ import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 const blockfrostKeyResourceName =
   process.env.BLOCKFROST_KEY_SECRET_RESOURCE_NAME!;
 const sidanPoolId = process.env.NEXT_PUBLIC_SIDAN_POOL_ID!;
-const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID!;
+const sidanDRepId = process.env.NEXT_PUBLIC_SIDAN_DREP_ID_129!;
 
 if (!blockfrostKeyResourceName) {
   throw new Error(
