@@ -9,7 +9,7 @@ export const adminAccessList: AdminUser[] = [];
 const adminWallets = process.env.ADMIN_WALLET_ADDRESSES;
 if (adminWallets) {
   const walletAddresses = adminWallets.split(";");
-
+  
   walletAddresses.forEach((address) => {
     if (address.trim()) {
       adminAccessList.push({
