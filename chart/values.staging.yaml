@@ -49,6 +49,7 @@ env:
     DATABASE_URL: data_from_circleci
     JWT_SECRET: data_from_circleci
     PORT: data_from_circleci
+    ADMIN_WALLET_ADDRESSES: data_from_circleci
   normal:
 
 cloudsqlproxy:
