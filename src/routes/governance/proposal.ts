@@ -3,9 +3,9 @@ import {
   createOrUpdateProposalController,
   getProposalByTxHashCertIndexController,
 } from "../../controllers/governance/proposal";
-import { verifyAdminAccess } from "../../middleware/admin";
+import verifyAdminAccess from "../../middleware/admin";
 
-const proposalRouter = express.Router();
+export const proposalRouter = express.Router();
 
 /**
  * @swagger
@@ -70,10 +70,9 @@ proposalRouter.get(
  *       400:
  *         description: Bad request
  */
-proposalRouter.post(
-  "/:txHash/:certIndex/",
-  verifyAdminAccess,
-  createOrUpdateProposalController
-);
+
+proposalRouter
+  .use(verifyAdminAccess)
+  .post("/:txHash/:certIndex/", createOrUpdateProposalController);
 
 export default proposalRouter;

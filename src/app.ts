@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -11,7 +10,8 @@ dotenv.config({
 console.log("Starting application...");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 export default app;

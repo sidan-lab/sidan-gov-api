@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sidan-gov-api.fullname" . }}-configmap
+  labels:
+    {{- include "sidan-gov-api.labels" . | nindent 4 }}
+data:
+  {{- range $key, $val := .Values.env.normal }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end}}

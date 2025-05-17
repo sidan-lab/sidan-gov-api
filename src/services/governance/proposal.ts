@@ -1,56 +1,61 @@
-import { Prisma, PrismaClient, Proposal } from "@prisma/client";
+import { Prisma, Proposal } from "@prisma/client";
+import prisma from "../../database";
 
-const prisma = new PrismaClient();
-
-export const getProposals = async () => {
-  let result: Proposal[] = [];
-
-  try {
-    result = await prisma.proposal.findMany();
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error fetching proposals.");
-  }
-
-  return result;
-};
-
+/**
+ * Get Proposal By TxHash and CertIndex
+ *
+ * Get a proposal in the database by txHash and certIndex. Used for getting proposal information and checking if a proposal exists in scheduled task.
+ *
+ * @param txHash - Transaction hash of the proposal
+ * @param certIndex - Certificate index of the proposal
+ * @return {Object} proposal - Proposal object
+ */
 export const getProposalByTxHashCertIndex = async (
   txHash: string,
   certIndex: string
 ) => {
   let result: Proposal | null = null;
 
-  try {
-    result = await prisma.proposal.findUnique({
-      where: {
-        tx_hash: txHash,
-        cert_index: certIndex,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    throw new Error("Proposal not exist.");
+  const proposal = await prisma.proposal.findUnique({
+    where: {
+      tx_hash: txHash,
+      cert_index: certIndex,
+    },
+  });
+
+  if (proposal) {
+    result = proposal;
   }
 
   return result;
 };
 
+/**
+ * Create or Update Proposal
+ *
+ * Create a new proposal in the database or update an existing proposal. Used in the scheduled task to store proposal information obtained from blockchain.
+ *
+ * @param {String} txHash - Transaction hash of the proposal
+ * @param {String} certIndex - Certificate index of the proposal
+ * @param {Object} proposal - Proposal object
+ * @return {Object} proposal - Proposal object
+ */
+
 export const createOrUpdateProposal = async (
   txHash: string,
   certIndex: string,
-  Proposal: Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
+  proposal: Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
 ) => {
   let result: Proposal | null = null;
 
   try {
+    if (!proposal || Object.keys(proposal).length === 0) {
+      throw new Error("Invalid data for proposal creation.");
+    }
+
     const data = Prisma.validator<
       Prisma.ProposalCreateInput | Prisma.ProposalUpdateInput
-    >()(Proposal);
-
-    if (!data) {
-      throw new Error("Invalid proposal data.");
-    }
+    >()(proposal);
 
     const findProposal = await prisma.proposal.findUnique({
       where: {
@@ -74,34 +79,36 @@ export const createOrUpdateProposal = async (
 
     return result;
   } catch (error) {
-    console.log(error);
-    throw new Error("Error creating proposal.");
+    console.log("Error creating proposal:", error.message);
+    throw new Error("Error creating proposal");
   }
 };
 
+/**
+ * Get Proposal Id By Post Id
+ *
+ * Get a proposal id in the database by post id. Used for getting proposal id to create a vote.
+ *
+ * @param {String} postId - Post id of the proposal
+ * @return {String} proposalId - Proposal id or null if not found
+ */
 export const getProposalIdByPostId = async (postId: string) => {
   let result: string | null = null;
 
-  try {
-    const proposal = await prisma.proposal.findUnique({
-      where: {
-        post_id: postId,
-      },
-    });
+  const proposal = await prisma.proposal.findUnique({
+    where: {
+      post_id: postId,
+    },
+  });
 
-    if (proposal) {
-      result = proposal.id;
-    }
-  } catch (error) {
-    console.log(error);
-    throw new Error("Proposal not exist.");
+  if (proposal) {
+    result = proposal.id;
   }
 
   return result;
 };
 
 module.exports = {
-  getProposals,
   getProposalByTxHashCertIndex,
   getProposalIdByPostId,
   createOrUpdateProposal,

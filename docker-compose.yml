@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    image: sidan-gov-api-local-testing
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    command: ["yarn", "start"]
+    container_name: sidan-gov-api-local-testing
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true

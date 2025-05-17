@@ -5,7 +5,7 @@ import proposalRouter from "./routes/governance/proposal";
 import voteRouter from "./routes/governance/vote";
 import userRouter from "./routes/user";
 
-const swaggerSpec = require("../swaggerConfig");
+import swaggerSpec from "../swaggerConfig";
 
 console.log("Setting up routes...");
 
@@ -25,7 +25,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 // Start the server
 const port = parseInt(process.env.PORT || "3002");
 const server = app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
 
 export default server;

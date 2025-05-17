@@ -1,15 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyAdminByDiscordId } from "../services/user";
 
-export const verifyAdminAccess = async (
+/**
+ * Middleware to verify if the user is an admin, based on the wallet address associated with the discord id
+ */
+
+const verifyAdminAccess = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   const discordId = req.headers["discord-id"];
 
   if (!discordId) {
-    return res.status(401).json({
+    res.status(401).json({
       message: "Unauthorized",
       error: "Unauthorized Access",
     });
@@ -24,10 +28,11 @@ export const verifyAdminAccess = async (
 
     next();
   } catch (error) {
-    console.log(error);
-    return res.status(401).json({
+    res.status(401).json({
       message: "Unauthorized",
       error: "Unauthorized Access",
     });
   }
 };
+
+export default verifyAdminAccess;

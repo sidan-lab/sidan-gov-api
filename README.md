@@ -5,31 +5,35 @@ This is the backend API, used to interact with the Discord Bot for SIDAN Lab Gov
 ## Getting Started
 
 ### Installation
+
 ```shell
 yarn # or npm install
 ```
 
 ## Pre-requisites
-1. (For database) Download and set up local PostgreSQL database, or use a cloud-based database service, like (Supabase)[https://supabase.com/]. 
 
+1. (For database) Download and set up local PostgreSQL database, or use a cloud-based database service, like (Supabase)[https://supabase.com/].
 
 ### Environment Variables
+
 Create a `.env` file in the workspace repository and set the environment variables according to `.env.example`. For details, please refer to the internal documentation.
 
 For database schema changes & migrations, port 5432 should be used for the database connection.
+
 ```
-DATABASE_URL=postgresql://postgres:password@the.postgres.ip.address:5432
+"postgresql://postgres:<database_password>@/sidan-gov?host=/cloudsql/gcp_project_id>:<region>>:<database_instance_name>"
 ```
 
 For database connection & operation, port 6543 should be used.
+
 ```
 DATABASE_URL=postgresql://postgres:password@the.postgres.ip.address:6543
 ```
 
-
 ### Running database migrations
 
 Environment variable must be set for `DATABASE_URL` to connect to the database.
+
 ```shell
 yarn db:generate # or npm run db:generate
 ```
@@ -46,7 +50,7 @@ yarn dev # or npm run dev
 
 `/api-docs` will show the Swagger documentation for the API.
 
-## Testing (WIP)
+## Testing
 
 ```shell
 yarn test # or npm test
