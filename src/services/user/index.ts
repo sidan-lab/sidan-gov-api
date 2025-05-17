@@ -232,8 +232,6 @@ export const verifyUserByDiscordId = async (discordId: string) => {
 
 export const verifyAdminByDiscordId = async (discordId: string) => {
   try {
-    console.log("Admin access list:", JSON.stringify(adminAccessList));
-    
     const user = await prisma.user.findUnique({
       where: {
         discord_id: discordId,
@@ -244,14 +242,10 @@ export const verifyAdminByDiscordId = async (discordId: string) => {
       throw new Error("User not exist.");
     }
 
-    console.log("User wallet:", user.wallet_address);
-    
     const isAdmin = adminAccessList.some(
       (admin) => admin.wallet_address === user.wallet_address
     );
-    
-    console.log("Is admin:", isAdmin);
-    
+
     return isAdmin;
   } catch (error) {
     console.log("Error verifying admin: ", error.message);
