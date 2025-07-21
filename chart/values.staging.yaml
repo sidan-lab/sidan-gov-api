@@ -60,7 +60,7 @@ cloudsqlproxy:
     - "--private-ip"
     - "--auto-iam-authn"
     - "--port=5432"
-    - "sidan-445102:asia-east2:sidan-onchain-governance"
+    - "sidan-445102:asia-south1:sidan-onchain-governance-staging"
   securityContext:
     runAsNonRoot: true
 # resources:
