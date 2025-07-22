@@ -18,8 +18,10 @@ export const getProposalByTxHashCertIndex = async (
 
   const proposal = await prisma.proposal.findUnique({
     where: {
-      tx_hash: txHash,
-      cert_index: certIndex,
+      tx_hash_cert_index: {
+        tx_hash: txHash,
+        cert_index: certIndex,
+      },
     },
   });
 
@@ -59,8 +61,10 @@ export const createOrUpdateProposal = async (
 
     const findProposal = await prisma.proposal.findUnique({
       where: {
-        tx_hash: txHash,
-        cert_index: certIndex,
+        tx_hash_cert_index: {
+          tx_hash: txHash,
+          cert_index: certIndex,
+        },
       },
     });
 
