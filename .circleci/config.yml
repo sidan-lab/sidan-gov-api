@@ -36,17 +36,27 @@ jobs:
             echo ${GCP_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
 
       - run:
-          name: Setup gcloud
+          name: Setup gcloud and set region
           command: |
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud config set project $GCLOUD_PROJECT_ID
-            gcloud auth configure-docker asia-east2-docker.pkg.dev --quiet
+            # Set region based on branch
+            if [ "${CIRCLE_BRANCH}" = "staging" ]; then
+              echo "export GCP_REGION=asia-south1" >> $BASH_ENV
+            else
+              echo "export GCP_REGION=asia-east2" >> $BASH_ENV
+            fi
+            source $BASH_ENV
+
+            # Use dynamic region value
+            gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
           name: Build and Push Docker image
           command: |
-            DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
+            source $BASH_ENV
+            DOCKER_IMAGE="${GCP_REGION}-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1"
             docker build -t $DOCKER_IMAGE .
             docker push $DOCKER_IMAGE
       - slack/notify:
@@ -63,6 +73,7 @@ jobs:
             echo ${GCP_SERVICE_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
             if [ "${CIRCLE_BRANCH}" = "main" ]; then
               echo "export env=prod" >> $BASH_ENV
+              echo "export GCP_REGION=asia-east2" >> $BASH_ENV
               echo "export BLOCKFROST_KEY_SECRET_RESOURCE_NAME=$BLOCKFROST_KEY_SECRET_RESOURCE_NAME_PROD" >> $BASH_ENV   
               echo "export NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID_PROD" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID_PROD" >> $BASH_ENV
@@ -73,6 +84,7 @@ jobs:
               echo "export ADMIN_WALLET_ADDRESSES='$ADMIN_WALLET_ADDRESSES_PROD'" >> $BASH_ENV
             elif [ "${CIRCLE_BRANCH}" = "staging" ]; then
               echo "export env=staging" >> $BASH_ENV
+              echo "export GCP_REGION=asia-south1" >> $BASH_ENV
               echo "export BLOCKFROST_KEY_SECRET_RESOURCE_NAME=$BLOCKFROST_KEY_SECRET_RESOURCE_NAME_STAGING" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_POOL_ID=$NEXT_PUBLIC_SIDAN_POOL_ID_STAGING" >> $BASH_ENV
               echo "export NEXT_PUBLIC_SIDAN_DREP_ID=$NEXT_PUBLIC_SIDAN_DREP_ID_STAGING" >> $BASH_ENV
@@ -89,12 +101,12 @@ jobs:
           command: |
             gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
             gcloud config set project $GCLOUD_PROJECT_ID
-            gcloud auth configure-docker asia-east2-docker.pkg.dev --quiet
-            gcloud container clusters get-credentials sidan-onchain-governance-${env} --region asia-east2 --project $GCLOUD_PROJECT_ID
+            gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev --quiet
+            gcloud container clusters get-credentials sidan-onchain-governance-${env} --region ${GCP_REGION} --project $GCLOUD_PROJECT_ID
       - run:
           name: Apply helm chart
           command: |
-            export DOCKER_IMAGE="asia-east2-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME"
+            export DOCKER_IMAGE="${GCP_REGION}-docker.pkg.dev/$GCLOUD_PROJECT_ID/sidan-onchain-governance/$CIRCLE_PROJECT_REPONAME"
             helm upgrade $CIRCLE_PROJECT_REPONAME ./chart --install --namespace $CIRCLE_PROJECT_REPONAME --create-namespace \
             --values ./chart/values.${env}.yaml \
             --set image.repository=$DOCKER_IMAGE \
