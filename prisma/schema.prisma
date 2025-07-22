@@ -29,14 +29,16 @@ model User {
 model Proposal {
   id              String    @id @default(uuid())
   post_id         String    @unique
-  tx_hash         String    @unique
-  cert_index      String?
+  tx_hash         String
+  cert_index      String
   governance_type String?
   expiration      Int?
   metadata        String?
   created_at      DateTime? @default(now())
   updated_at      DateTime? @updatedAt
   vote            Vote[]
+
+  @@unique([tx_hash, cert_index])
 }
 
 model Vote {
