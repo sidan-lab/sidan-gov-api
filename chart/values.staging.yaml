@@ -18,7 +18,7 @@ serviceAccount:
 autoscaling:
   enabled: true
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 3
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
@@ -63,10 +63,18 @@ cloudsqlproxy:
     - "sidan-445102:asia-south1:sidan-onchain-governance-staging"
   securityContext:
     runAsNonRoot: true
-# resources:
-#   requests:
-#     memory: "64Mi"
-#     cpu: "250m"
-#   limits:
-#     memory: "128Mi"
-#     cpu: "500m"
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "256m"
+  limits:
+    memory: "512Mi"
+    cpu: "512m"
